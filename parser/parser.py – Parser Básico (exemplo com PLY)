@@ -1,0 +1,67 @@
+from ply import yacc
+from lexer import tokens
+
+def p_programa(p):
+    'programa : bloco'
+    p[0] = ('programa', p[1])
+
+def p_bloco(p):
+    'bloco : ABRE_BLOCO sobrescrita codigo subescritas FECHA_BLOCO'
+    p[0] = ('bloco', p[2], p[3], p[4])
+
+def p_sobrescrita(p):
+    'sobrescrita : ABRE_SOBRESC comentarios FECHA_SOBRESC'
+    p[0] = ('sobrescrita', p[2])
+
+def p_comentarios(p):
+    'comentarios : comentario'
+    p[0] = [p[1]]
+
+def p_comentario(p):
+    'comentario : TEXTO'
+    p[0] = ('comentario', p[1])
+
+def p_codigo(p):
+    'codigo : ABRE_CODIGO declaracoes FECHA_CODIGO'
+    p[0] = ('codigo', p[2])
+
+def p_declaracoes(p):
+    'declaracoes : declaracao'
+    p[0] = [p[1]]
+
+def p_declaracao_variavel(p):
+    'declaracao : tipo identificador "=" valor ";"'
+    p[0] = ('variavel', p[1], p[2], p[4])
+
+def p_tipo(p):
+    '''tipo : INT
+            | FLOAT
+            | BOOL
+            | STRING
+            | TEMPORAL
+            | FORMULA
+            | IMAGEM
+            | AUDIO
+            | VIDEO
+            | TABELA
+            | GRAFO'''
+    p[0] = ('tipo', p[1])
+
+def p_identificador(p):
+    'identificador : ID'
+    p[0] = ('ID', p[1])
+
+def p_valor(p):
+    '''valor : NUMERO
+             | CADEIA_TEXTO
+             | BOOLEANO
+             | OBJETO_LITERAL'''
+    p[0] = ('valor', p[1])
+
+def p_error(p):
+    if p:
+        print(f"Erro de sintaxe em '{p.value}'")
+    else:
+        print("Erro de sintaxe no final do arquivo")
+
+parser = yacc.yacc()
