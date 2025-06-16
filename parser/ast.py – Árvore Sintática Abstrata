@@ -1,0 +1,35 @@
+class ASTNode:
+    def __init__(self, type, children=None):
+        self.type = type
+        self.children = children or []
+
+    def __repr__(self):
+        return f"{self.type}({self.children})"
+
+class Bloco(ASTNode):
+    def __init__(self, sobrescrita, codigo, subescritas):
+        super().__init__('BLOCO')
+        self.sobrescrita = sobrescrita
+        self.codigo = codigo
+        self.subescritas = subescritas
+
+class Sobrescrita(ASTNode):
+    def __init__(self, comentarios):
+        super().__init__('SOBRESCRITA')
+        self.comentarios = comentarios
+
+class Codigo(ASTNode):
+    def __init__(self, declaracoes):
+        super().__init__('CODIGO')
+        self.declaracoes = declaracoes
+
+class Subescritas(ASTNode):
+    def __init__(self, codigos):
+        super().__init__('SUBESCRITAS')
+        self.codigos = codigos
+
+class FragmentoCodigo(ASTNode):
+    def __init__(self, linguagem, conteudo):
+        super().__init__('FRAGMENTO')
+        self.linguagem = linguagem
+        self.conteudo = conteudo
