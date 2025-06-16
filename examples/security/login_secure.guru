@@ -1,0 +1,80 @@
+[bloco]
+[sobrescrita]
+"Contexto: autenticação segura"
+"Campo do conhecimento: segurança da informação"
+"Nível de interpretação: literal"
+"Raiz semântica: SEC"
+[/sobrescrita]
+
+¡codigo!
+NOM funcao autenticarUsuario(String usuario, String senha) {
+    Formula querySQL = "SELECT * FROM usuarios WHERE nome = '" + usuario + "' AND senha = '" + hash(senha) + "'";
+    Resultado resultado = ABL.database.query(querySQL);
+
+    se (resultado.vazio()) {
+        VOC.logger.registrar("Tentativa de login mal-sucedida para usuário: " + usuario);
+        retornar falso;
+    } senao {
+        VOC.session.criar(resultado.usuario());
+        VOC.logger.registrar("Login bem-sucedido para: " + usuario);
+        retornar verdadeiro;
+    }
+}
+!/codigo!
+
+[subescritas]
+¿python?
+def authenticate_user(username, password):
+    hashed = hashlib.sha256(password.encode()).hexdigest()
+    query = f"SELECT * FROM users WHERE username='{username}' AND password='{hashed}'"
+    try:
+        result = db.execute(query).fetchone()
+        if result:
+            session.create(result['id'])
+            log.success(f"Login bem-sucedido: {username}")
+            return True
+        else:
+            log.warn(f"Tentativa falha: {username}")
+            return False
+    except Exception as e:
+        log.error(f"Erro SQL: {e}")
+        return False
+?/python?
+
+¿javascript?
+function authenticateUser(username, password) {
+    const hashed = CryptoJS.SHA256(password).toString();
+    const query = `SELECT * FROM users WHERE username='${username}' AND password='${hashed}'`;
+    try {
+        const result = db.query(query);
+        if (result.length > 0) {
+            Session.create(result.id);
+            console.log(`Login bem-sucedido: ${username}`);
+            return true;
+        } else {
+            console.warn(`Tentativa falha: ${username}`);
+            return false;
+        }
+    } catch (e) {
+        console.error(`Erro SQL: ${e}`);
+        return false;
+    }
+}
+?/javascript?
+[/subescritas]
+
+[compensacao]
+[erro tipo="SQLInjection"]
+LOC.log registrar("Possível ataque de injeção SQL detectado.");
+return null;
+[/erro]
+
+[alternativa condicao="modo_seguro_ativado"]
+NOM funcao autenticarUsuarioSeguro(String usuario, String senha) {
+    Query preparada = ABL.sql.preparar("SELECT * FROM usuarios WHERE nome=? AND senha=?");
+    ABL.sql.bind(preparada, usuario, hash(senha));
+    Resultado resultado = ABL.sql.executar(preparada);
+    ...
+}
+[/alternativa]
+[/compensacao]
