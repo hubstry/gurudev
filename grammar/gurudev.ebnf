@@ -1,0 +1,35 @@
+ programa         = { bloco };
+bloco            = "[bloco]", sobrescrita, codigo, subescritas, "[/bloco]";
+sobrescrita      = "[sobrescrita]", { comentario }, "[/sobrescrita]";
+comentario       = '"' , { QualquerCaractere - '"' }, '"';
+codigo           = ¡codigo!", { declaracao }, "!/codigo!";
+declaracao       = declaracao_variavel | declaracao_funcao | fluxo_execucao;
+declaracao_variavel = tipo identificador "=" valor ";";
+tipo_retorno     = tipo | "Void";
+parametro        = tipo identificador;
+instrucao        = declaracao_variavel | expressao | retorno;
+expressao        = operacao_matematica | chamada_funcao | acesso_dados;
+retorno          = "return", expressao, ";";
+subescritas      = "[subescritas]", { fragmento_codigo }, "[/subescritas]";
+fragmento_codigo = ¿ , linguagem ("[" tipo_mapeamento "]")? , "?" , { conteudo }, "?/" , linguagem , "?";
+linguagem        = "python" | "javascript" | "sql" | "java" | "rust" | "go" | "wasm";
+clavemanento_contextual = "[" campo_conhecimento "]" , [ nivel_interpretação ] , [ raiz_semantica ];
+campo_conhecimento = "filosofia" | "espiritual" | "ciencia" | "arte" | "geral";
+nivel_interpretação = "[nivel=" , ("literal" | "parabolico" | "historico" | "linguistico" | "matematico" | "simbolico" | "holistico") , "]";
+raiz_semantica   = "[raiz=""" , raiz , """]";
+raiz             = "CALC" | "LING" | "MEDIA" | "CONHECIMENTO" | [A-Za-z]+;
+fluxo_execucao   = "fluxo" , ( "serie" | "paralelo" ) , "{", { bloco_ou_chaveamento }, "}";
+bloco_ou_chaveamento = bloco | chaveamento_dinamico;
+chaveamento_dinamico = "em" , linguagem_alvo , "{", { conteudo }, "}";
+identificador    = [a-zA-Z], { [a-zA-Z0-9_] };
+tipo             = "Int" | "Float" | "Bool" | "String" | "Temporal" | "Formula" | "Imagem" | "Audio" | "Video" | "Tabela<T>" | "Grafo<K,V>";
+valor            = literal | chamada_funcao;
+literal          = cadeia_texto | numero | booleano | objeto_literal;
+cadeia_texto     = '"', { QualquerCaractere - '"' }, '"';
+numero           = dígito , { dígito } , [ "." , { dígito } ];
+booleano         = "verdadeiro" | "falso";
+objeto_literal   = "{", { propriedade }, "}";
+propriedade      = identificador , ":" , valor;
+
+QualquerCaractere = ? qualquer caractere ?
+dígito           = "0" | "1" | ... | "9";
